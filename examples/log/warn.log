@@ -1,2 +1,0 @@
-{"message":"An error occur","level":"error","label":"Test01","timestamp":"2019-06-13T02:20:23.917Z"}
-{"message":"watch out ! this is a json !","success":false,"status":500,"level":"warn","label":"Test01","timestamp":"2019-06-13T02:20:23.923Z"}

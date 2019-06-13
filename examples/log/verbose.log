@@ -1,5 +1,0 @@
-{"message":"An error occur","level":"error","label":"Test01","timestamp":"2019-06-13T02:20:23.917Z"}
-{"message":"An info occur","level":"info","label":"Test01","timestamp":"2019-06-13T02:20:23.922Z"}
-{"message":"watch out ! this is a json !","success":false,"status":500,"level":"warn","label":"Test01","timestamp":"2019-06-13T02:20:23.923Z"}
-{"body":{"user":"PAul","email":"john@boby.com","lastLogin":"2019-04-05"},"message":"bla bla bla","status":201,"success":true,"level":"info","label":"Test01","timestamp":"2019-06-13T02:20:23.923Z"}
-{"@timestamp":"2019-09-30T05:09:08.282Z","message":"Some log message","severity":"info","fields":{"method":"GET","url":"/sitemap.xml","headers":{"host":"www.example.com","user-agent":"Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)","accept":"*/*","accept-encoding":"gzip,deflate","from":"googlebot(at)googlebot.com","if-modified-since":"Tue, 30 Sep 2019 11:34:56 GMT","x-forwarded-for":"66.249.78.19"}},"level":"info","label":"Test01","timestamp":"2019-06-13T02:20:23.923Z"}
