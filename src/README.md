@@ -46,7 +46,7 @@ if you provide no options, only the console output will work and only in develop
 ## Example
 
 ```
-const webuxlogger = require("webuxlogger")(options);
+const webuxlogger = require("webux-logger")(options);
 
 webuxlogger.error("An error occur");
 webuxlogger.info("An info occur");
