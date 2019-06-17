@@ -6,7 +6,6 @@
   "author": "Studio Webux S.E.N.C",
   "license": "SEE LICENSE IN license.txt",
   "dependencies": {
-    "logstash-client": "^1.1.1",
     "winston": "^3.2.1",
     "winston-logstash-transport": "^2.0.0"
   }
