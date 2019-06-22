@@ -67,7 +67,13 @@ module.exports = options => {
         message: "Logging using stream function"
       };
 
-      logger.info({ ...object, ...JSON.parse(message) });
+      let cleaned = SON.parse(message);
+
+      delete cleaned["label"];
+      delete cleaned["level"];
+      delete cleaned["timestamp"];
+
+      logger.info({ ...object, ...cleaned });
     }
   };
 
