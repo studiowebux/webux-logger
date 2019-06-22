@@ -36,80 +36,56 @@ const hasBlacklist = (object, parent, child, find) => {
   return object;
 };
 
-function isJSON(text) {
-  try {
-    return JSON.parse(text);
-  } catch (e) {
-    return false;
-  }
-}
-
 const filterSecret = options => {
   return format((info, opts) => {
-    console.log(info)
     let cleaned = {
       body: {},
       headers: {},
       params: {}
     };
 
-    if (options.blacklist && info.message) {
-      
-      let parsedMessage =
-        isJSON(info.message) && typeof info.message === "string"
-          ? JSON.parse(info.message)
-          : info.message;
-      const Body = isJSON(parsedMessage.body || "")
-        ? JSON.parse(parsedMessage.body)
-        : {};
-      const Headers = isJSON(parsedMessage.headers || "")
-        ? JSON.parse(parsedMessage.headers)
-        : {};
-      const Params = isJSON(parsedMessage.params || "")
-        ? JSON.parse(parsedMessage.params)
-        : {};
-
+    // apply only if object, body params or headers
+    if (
+      options.blacklist &&
+      info &&
+      (info.body || info.params || info.headers)
+    ) {
+      // do it
       options.blacklist.forEach(blacklist => {
-        console.log("Check for : " + blacklist)
-        console.log(cleaned)
-        if (parsedMessage.body) {
-          Object.keys(Body).forEach(body => {
-            hasBlacklist(cleaned.body, Body, body, blacklist);
+        // check if body does not contains blacklisted element.
+        if (typeof info.body === "object") {
+          Object.keys(info.body).forEach(body => {
+            hasBlacklist(cleaned.body, info.body, body, blacklist);
           });
         }
-        if (parsedMessage.headers) {
-          Object.keys(Headers).forEach(header => {
-            hasBlacklist(cleaned.headers, Headers, header, blacklist);
+
+        if (typeof info.headers === "object") {
+          Object.keys(info.headers).forEach(header => {
+            hasBlacklist(cleaned.headers, info.headers, header, blacklist);
           });
         }
-        if (parsedMessage.params) {
-          Object.keys(Params).forEach(param => {
-            hasBlacklist(cleaned.params, Params, param, blacklist);
+
+        if (typeof info.params === "object") {
+          Object.keys(info.params).forEach(param => {
+            hasBlacklist(cleaned.params, info.params, param, blacklist);
           });
         }
       });
 
-      console.log("Finished !")
+      info.body = cleaned.body;
+      info.params = cleaned.params;
+      info.headers = cleaned.headers;
 
-      let _c = parsedMessage;
-      if (cleaned && !_.isEmpty(cleaned)) {
-        if (cleaned.body && !_.isEmpty(cleaned.body)) {
-          _c.body = cleaned.body;
+      //logstash required that empty objects are removed ...
+      Object.keys(info).forEach(item => {
+        if (_.isEmpty(info[item])) {
+          delete info[item];
         }
-        if (cleaned.params && !_.isEmpty(cleaned.params)) {
-          _c.params = cleaned.params;
-        }
-        if (cleaned.headers && !_.isEmpty(cleaned.headers)) {
-          _c.headers = cleaned.headers;
-        }
-      }
-
-      info.message = JSON.stringify(_c);
-
-      return info;
-    } else {
+      });
       return info;
     }
+
+    return info;
   });
 };
 

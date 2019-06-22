@@ -68,10 +68,9 @@ module.exports = options => {
       };
 
       let cleaned = JSON.parse(message);
-
-      delete cleaned["label"];
-      delete cleaned["level"];
-      delete cleaned["timestamp"];
+      cleaned.body = JSON.parse(JSON.parse(message).body);
+      cleaned.params = JSON.parse(JSON.parse(message).params);
+      cleaned.headers = JSON.parse(JSON.parse(message).headers);
 
       logger.info({ ...object, ...cleaned });
     }
