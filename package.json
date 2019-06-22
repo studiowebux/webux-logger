@@ -1,6 +1,6 @@
 {
   "name": "webux-logger",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "A wrapper to log everything",
   "main": "index.js",
   "author": "Studio Webux S.E.N.C",
