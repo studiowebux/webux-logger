@@ -86,7 +86,7 @@ const filterSecret = options => {
         }
       });
 
-      _c = parsedMessage;
+      let _c = parsedMessage;
       if (cleaned && !_.isEmpty(cleaned)) {
         if (cleaned.body && !_.isEmpty(cleaned.body)) {
           _c.body = cleaned.body;
