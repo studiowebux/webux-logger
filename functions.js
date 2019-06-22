@@ -79,7 +79,7 @@ const filterSecret = options => {
       //logstash required that empty objects are removed ...
       Object.keys(info).forEach(item => {
         if (_.isEmpty(info[item])) {
-          delete info[item];
+          info[item] = "{}"
         }
       });
       return info;
