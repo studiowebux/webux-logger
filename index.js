@@ -64,10 +64,10 @@ module.exports = options => {
   logger.stream = {
     write: (message, encoding) => {
       let object = {
-        message: "Logging using stream function",
-        extra: JSON.parse(message)
+        message: "Logging using stream function"
       };
-      logger.info(object);
+
+      logger.info({ ...object, ...JSON.parse(message) });
     }
   };
 

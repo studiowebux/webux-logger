@@ -69,6 +69,8 @@ const filterSecret = options => {
         : {};
 
       options.blacklist.forEach(blacklist => {
+        console.log("Check for : " + blacklist)
+        console.log(cleaned)
         if (parsedMessage.body) {
           Object.keys(Body).forEach(body => {
             hasBlacklist(cleaned.body, Body, body, blacklist);
@@ -85,6 +87,8 @@ const filterSecret = options => {
           });
         }
       });
+
+      console.log("Finished !")
 
       let _c = parsedMessage;
       if (cleaned && !_.isEmpty(cleaned)) {
