@@ -64,6 +64,7 @@ module.exports = options => {
   logger.stream = {
     write: (message, encoding) => {
       logger.info(message);
+      logger.info(JSON.parse(message));
     }
   };
 
