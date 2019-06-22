@@ -67,7 +67,7 @@ module.exports = options => {
         message: "Logging using stream function"
       };
 
-      let cleaned = SON.parse(message);
+      let cleaned = JSON.parse(message);
 
       delete cleaned["label"];
       delete cleaned["level"];

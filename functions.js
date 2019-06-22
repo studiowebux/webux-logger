@@ -46,6 +46,7 @@ function isJSON(text) {
 
 const filterSecret = options => {
   return format((info, opts) => {
+    console.log(info)
     let cleaned = {
       body: {},
       headers: {},
