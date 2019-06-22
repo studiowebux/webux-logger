@@ -15,6 +15,7 @@
 "use strict";
 
 const _ = require("lodash");
+const { format } = require("winston");
 
 const hasBlacklist = (object, parent, child, find) => {
   if (
