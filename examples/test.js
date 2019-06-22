@@ -16,7 +16,7 @@ const options = {
   blacklist: ["password"]
 };
 
-const webuxlogger = require("../src/index")(options);
+const webuxlogger = require("../index")(options);
 
 // const levels = {
 //   error: 0,
