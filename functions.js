@@ -53,8 +53,9 @@ const filterSecret = options => {
     };
 
     if (options.blacklist && info.message) {
+      
       let parsedMessage =
-        typeof info.message === "string"
+        isJSON(info.message) && typeof info.message === "string"
           ? JSON.parse(info.message)
           : info.message;
       const Body = isJSON(parsedMessage.body || "")
