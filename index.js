@@ -6,7 +6,7 @@
 // ╚═╝     ╚═╝╚═╝╚═════╝ ╚═════╝ ╚══════╝╚══════╝ ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝
 
 /**
- * File: logger.js
+ * File: index.js
  * Author: Tommy Gingras
  * Date: 2018-07-05
  * License: All rights reserved Studio Webux S.E.N.C 2015-Present
@@ -17,25 +17,7 @@
 const { createLogger, format, transports } = require("winston");
 const { combine, timestamp, label, json } = format;
 const { LogstashTransport } = require("winston-logstash-transport");
-
-const filterSecret = options => {
-  return format((info, opts) => {
-    if (options.blacklist && info.body) {
-      options.blacklist.forEach(blacklist => {
-        if (info.body) {
-          delete info.body[blacklist];
-        }
-        if (info.header) {
-          delete info.header[blacklist];
-        }
-        if (info.query) {
-          delete info.query[blacklist];
-        }
-      });
-    }
-    return info;
-  });
-};
+const { filterSecret } = require("./functions");
 
 module.exports = options => {
   if (!options) {
