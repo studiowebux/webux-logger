@@ -19,22 +19,29 @@ const { combine, timestamp, label, json } = format;
 const { LogstashTransport } = require("winston-logstash-transport");
 const { filterSecret } = require("./functions");
 
-module.exports = options => {
-  if (!options) {
-    options = {};
-  }
-
+/**
+ * Create a custom logger with or without options.
+ * @param {Object} options The configuration of the module, Optional
+ * @return {Object} Return the logger.
+ */
+module.exports = (options = {}) => {
   let logger = createLogger({
     format: combine(
-      label({ label: options.application_id }),
-      filterSecret(options)(),
+      label({ label: options.application_id || "No label defined." }),
+      filterSecret(options.blacklist)(),
       timestamp(),
       json()
     )
   });
 
+  // For each files defined in the options
+  // link the filename and the error level.
   if (options.filenames) {
     Object.keys(options.filenames).forEach(level => {
+      if (!options.filenames[level]) {
+        throw new Error("Invalid file provided");
+      }
+
       logger.add(
         new transports.File({
           level: level,
@@ -44,6 +51,7 @@ module.exports = options => {
     });
   }
 
+  // Logstash configuration is defined
   if (options.logstash && options.logstash.host && options.logstash.port) {
     logger.add(
       new LogstashTransport({
@@ -53,6 +61,7 @@ module.exports = options => {
     );
   }
 
+  // add console redirection if not in production or forced to do.
   if (options.forceConsole === true || process.env.NODE_ENV != "production") {
     logger.add(
       new transports.Console({
@@ -61,6 +70,7 @@ module.exports = options => {
     );
   }
 
+  //define the stream object for morgan
   logger.stream = {
     write: (message, encoding) => {
       let object = {
@@ -68,9 +78,9 @@ module.exports = options => {
       };
 
       let cleaned = JSON.parse(message);
-      cleaned.body = JSON.parse(JSON.parse(message).body);
-      cleaned.params = JSON.parse(JSON.parse(message).params);
-      cleaned.headers = JSON.parse(JSON.parse(message).headers);
+      cleaned.body = JSON.parse(JSON.parse(message).body) || {};
+      cleaned.params = JSON.parse(JSON.parse(message).params) || {};
+      cleaned.headers = JSON.parse(JSON.parse(message).headers) || {};
 
       logger.info({ ...object, ...cleaned });
     }

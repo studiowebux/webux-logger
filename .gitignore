@@ -1,2 +1,4 @@
-**/log/**
-**/node_modules/**
+node_modules/
+examples/ELK/elasticsearch/data/
+log/
+examples/log/

@@ -1,13 +1,17 @@
 # Webux Logger
-The module simplify the usage of winston with multiple transports
-- console
-- files
-- logstash
-  
-it uses winston 3.x  
-Notice: to get logstash working, you will need a ELK Stack, check the example folder for an example.  
+
+This is only a wrapper around winston.  
+The module simplify the usage of winston with multiple transports  
+
+- console  
+- files  
+- logstash  
+
+it uses winston 3.x   
+Notice: to get logstash configuration working, you will need a ELK Stack, check the example folder.  
 
 # Installation
+
 ```bash
 npm i --save webux-logger
 ```
@@ -35,11 +39,12 @@ const options = {
 ```
 
 Create a constant to define all the winston parameters.  
-- application_id: specify which backend is sending the message.
-- forceConsole: it force to get the log's output to the console even in production.
-- logstash: set both parameters to get a logstash redirection, remember, the port must be UDP. (to disable logstash, just delete the option)
-- filenames: for each logging level, you can define a file.
-- blacklist: this array contains the word to remove from the logs.
+
+- application_id: specify which backend is sending the message.  
+- forceConsole: it force to get the logs output to the console even in production.  
+- logstash: set both parameters to get a logstash redirection, remember, the port must be UDP. (to disable logstash, just delete the option)  
+- filenames: for each logging level, you can define a file.  
+- blacklist: this array contains the words to remove from the logs.  
 
 if you provide no options, only the console output will work and only in development mode.  
 
@@ -68,7 +73,10 @@ Console Output:
 {"message":"watch out ! this is a json !","success":false,"status":500,"level":"warn","label":"Test01","timestamp":"2019-06-13T01:48:06.706Z"}
 ```
 
-# Package used
+## Contributing
 
-Check the package.json to get which package I used and which version, this module is ONLY a wrapper.  
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
+## License
+
+SEE LICENSE IN license.txt
