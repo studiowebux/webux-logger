@@ -5,7 +5,13 @@
   "main": "index.js",
   "author": "Studio Webux S.E.N.C",
   "license": "SEE LICENSE IN license.txt",
+  "homepage": "https://github.com/studiowebux/webux-logger",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/studiowebux/webux-logger.git"
+  },
   "dependencies": {
+    "lodash": "^4.17.11",
     "winston": "^3.2.1",
     "winston-logstash-transport": "^2.0.0"
   }
