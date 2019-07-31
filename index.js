@@ -78,9 +78,15 @@ module.exports = (options = {}) => {
       };
 
       let cleaned = JSON.parse(message);
-      cleaned.body = JSON.parse(JSON.parse(message).body) || {};
-      cleaned.params = JSON.parse(JSON.parse(message).params) || {};
-      cleaned.headers = JSON.parse(JSON.parse(message).headers) || {};
+      cleaned.body = JSON.parse(message).body
+        ? JSON.parse(JSON.parse(message).body)
+        : {};
+      cleaned.params = JSON.parse(message).params
+        ? JSON.parse(JSON.parse(message).params)
+        : {};
+      cleaned.headers = JSON.parse(message).headers
+        ? JSON.parse(JSON.parse(message).headers)
+        : {};
 
       logger.info({ ...object, ...cleaned });
     }
