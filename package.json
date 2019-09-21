@@ -11,6 +11,7 @@
     "url": "https://github.com/studiowebux/webux-logger.git"
   },
   "dependencies": {
+    "cluster": "^0.7.7",
     "lodash": "^4.17.11",
     "winston": "^3.2.1",
     "winston-logstash-transport": "^2.0.0"

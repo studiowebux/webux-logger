@@ -15,7 +15,7 @@
 "use strict";
 
 const { createLogger, format, transports } = require("winston");
-const { combine, timestamp, label, json } = format;
+const { combine, timestamp, label, json, colorize } = format;
 const { LogstashTransport } = require("winston-logstash-transport");
 const { filterSecret } = require("./lib/functions");
 
@@ -27,10 +27,13 @@ const { filterSecret } = require("./lib/functions");
 module.exports = (options = {}) => {
   let logger = createLogger({
     format: combine(
-      label({ label: options.application_id || "No label defined." }),
+      label({
+        label: options.application_id || "No label defined."
+      }),
       filterSecret(options.blacklist)(),
       timestamp(),
-      json()
+      json(),
+      colorize()
     )
   });
 
