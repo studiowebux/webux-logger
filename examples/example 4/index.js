@@ -1,23 +1,22 @@
+// normal usage
 const options = {
-  application_id: "Test01",
-  forceConsole: false,
-  consoleLevel: "info",
-  logstash: {
-    host: "127.0.0.1",
-    port: "5000" // udp only !
-  },
-  filenames: {
-    error: "log/error.log",
-    warn: "log/warn.log",
-    info: "log/info.log",
-    verbose: "log/verbose.log",
-    debug: "log/debug.log",
-    silly: "log/silly.log"
-  },
-  blacklist: ["password", "authorization"]
-};
+    application_id: "Test01",
+    forceConsole: false,
+    consoleLevel: "info",
+    logstash: {
+      host: "127.0.0.1",
+      port: "5000" // udp only !
+    },
+    filenames: {
+      error: "log/error.log",
+      warn: "log/warn.log",
+      info: "log/info.log",
+      debug: "log/debug.log",
+    },
+    blacklist: ["password", "authorization", "accessToken", "refreshToken"]
+  };
 
-const webuxlogger = require("../index")(options);
+const webuxlogger = require("../../index")(options);
 
 // const levels = {
 //   error: 0,
@@ -30,12 +29,14 @@ const webuxlogger = require("../index")(options);
 
 webuxlogger.error("An error occur");
 webuxlogger.info("An info occur");
-webuxlogger.debug("An debug occur");
+webuxlogger.debug("A debug occur");
 webuxlogger.warn({
   message: "this is a json !",
   success: false,
   status: 500
 });
+webuxlogger.silly("A silly message")
+webuxlogger.verbose("A verbose message")
 
 webuxlogger.info({
   body: {

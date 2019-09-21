@@ -17,7 +17,7 @@
 const { createLogger, format, transports } = require("winston");
 const { combine, timestamp, label, json } = format;
 const { LogstashTransport } = require("winston-logstash-transport");
-const { filterSecret } = require("./functions");
+const { filterSecret } = require("./lib/functions");
 
 /**
  * Create a custom logger with or without options.
@@ -65,7 +65,8 @@ module.exports = (options = {}) => {
   if (options.forceConsole === true || process.env.NODE_ENV != "production") {
     logger.add(
       new transports.Console({
-        level: "silly"
+        level: options.consoleLevel || "silly",
+        format: format.simple()
       })
     );
   }

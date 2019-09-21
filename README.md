@@ -22,6 +22,7 @@ npm i --save webux-logger
 const options = {
   application_id: "Test01",
   forceConsole: true,
+  consoleLevel: "silly",
   logstash: {
     host: "127.0.0.1",
     port: "5000" // udp only !
@@ -42,6 +43,7 @@ Create a constant to define all the winston parameters.
 
 - application_id: specify which backend is sending the message.  
 - forceConsole: it force to get the logs output to the console even in production.  
+- consoleLevel: it set the level of message to show on the console.  
 - logstash: set both parameters to get a logstash redirection, remember, the port must be UDP. (to disable logstash, just delete the option)  
 - filenames: for each logging level, you can define a file.  
 - blacklist: this array contains the words to remove from the logs.  
