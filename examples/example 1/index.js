@@ -28,6 +28,8 @@ const webuxlogger = require("../../index")(options);
 //   silly: 5
 // };
 
+webuxlogger.error(`\x1b[33mAn error occur\x1b[0m` );
+
 webuxlogger.error("An error occur");
 webuxlogger.info("An info occur");
 webuxlogger.debug("A debug occur");
