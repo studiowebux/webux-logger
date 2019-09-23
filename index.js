@@ -26,6 +26,7 @@ const { filterSecret } = require("./lib/functions");
  */
 module.exports = (options = {}) => {
   let logger = createLogger({
+    defaultMeta: options.meta,
     format: combine(
       label({
         label: options.application_id || "No label defined."
