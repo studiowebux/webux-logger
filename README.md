@@ -13,7 +13,7 @@ Notice: to get logstash configuration working, you will need a ELK Stack, check 
 # Installation
 
 ```bash
-npm i --save webux-logger
+npm i --save @studiowebux/logger
 ```
 
 # Usage
@@ -53,7 +53,7 @@ if you provide no options, only the console output will work and only in develop
 ## Example
 
 ```
-const webuxlogger = require("webux-logger")(options);
+const webuxlogger = require("@studiowebux/logger")(options);
 
 webuxlogger.error("An error occur");
 webuxlogger.info("An info occur");
