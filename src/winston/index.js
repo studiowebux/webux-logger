@@ -17,31 +17,33 @@
 const { createLogger, format, transports } = require("winston");
 const { combine, timestamp, label, json, colorize } = format;
 const { LogstashTransport } = require("winston-logstash-transport");
-const { filterSecret } = require("./lib/functions");
+const { filterSecret } = require("./filter");
 
 /**
- * Create a custom logger with or without options.
+ * Creates a custom logger with or without options.
  * @param {Object} options The configuration of the module, Optional
- * @return {Object} Return the logger.
+ * @returns {Object} Returns the logger.
  */
 module.exports = (options = {}) => {
+  // Creates the logger
   let logger = createLogger({
     defaultMeta: options.meta,
     format: combine(
       label({
-        label: options.application_id || "No label defined."
+        label: options.application_id || "No label defined.",
       }),
       filterSecret(options.blacklist)(),
       timestamp(),
       json(),
       colorize()
-    )
+    ),
   });
 
   // For each files defined in the options
   // link the filename and the error level.
+  // It stores the logs in a file
   if (options.filenames) {
-    Object.keys(options.filenames).forEach(level => {
+    Object.keys(options.filenames).forEach((level) => {
       if (!options.filenames[level]) {
         throw new Error("Invalid file provided");
       }
@@ -49,52 +51,65 @@ module.exports = (options = {}) => {
       logger.add(
         new transports.File({
           level: level,
-          filename: options.filenames[level]
+          filename: options.filenames[level],
         })
       );
     });
   }
 
-  // Logstash configuration is defined
+  // If Logstash configuration is defined
   if (options.logstash && options.logstash.host && options.logstash.port) {
     logger.add(
       new LogstashTransport({
         host: options.logstash.host,
-        port: options.logstash.port
+        port: options.logstash.port,
       })
     );
   }
 
-  // add console redirection if not in production or forced to do.
+  // Adds console redirection,
+  // If not in 'production' or 'forced' to print.
   if (options.forceConsole === true || process.env.NODE_ENV != "production") {
     logger.add(
       new transports.Console({
         level: options.consoleLevel || "silly",
-        format: format.simple()
+        format: format.simple(),
       })
     );
   }
 
-  //define the stream object for morgan
+  // Defines the stream object for morgan
   logger.stream = {
-    write: (message, encoding) => {
+    write: (message) => {
+      // This message is required to work with logstash
+      // Otherwise the entry is ignored.
       let object = {
-        message: "Logging using stream function"
+        message: "Logging using stream function",
       };
 
-      let cleaned = JSON.parse(message);
-      cleaned.body = JSON.parse(message).body
-        ? JSON.parse(JSON.parse(message).body)
-        : {};
-      cleaned.params = JSON.parse(message).params
-        ? JSON.parse(JSON.parse(message).params)
-        : {};
-      cleaned.headers = JSON.parse(message).headers
-        ? JSON.parse(JSON.parse(message).headers)
-        : {};
+      try {
+        let cleaned = JSON.parse(message);
+        cleaned.body = JSON.parse(message).body
+          ? JSON.parse(JSON.parse(message).body)
+          : {};
+        cleaned.params = JSON.parse(message).params
+          ? JSON.parse(JSON.parse(message).params)
+          : {};
+        cleaned.headers = JSON.parse(message).headers
+          ? JSON.parse(JSON.parse(message).headers)
+          : {};
+        cleaned.query = JSON.parse(message).query
+          ? JSON.parse(JSON.parse(message).query)
+          : {};
+        cleaned.url = JSON.parse(message).url ? JSON.parse(message).url : "";
 
-      logger.info({ ...object, ...cleaned });
-    }
+        logger.info({ ...object, ...cleaned });
+      } catch (e) {
+        // It goes here when the JSON.parse fail
+        // This is expected based on the type configured.
+        logger.info({ message });
+      }
+    },
   };
 
   return logger;

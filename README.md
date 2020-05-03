@@ -1,31 +1,73 @@
-# Webux Logger
+## Introduction
 
-This is only a wrapper around winston.  
-The module simplify the usage of winston with multiple transports  
+This module uses **morgan** & **winston**.  
+These two features are implemented
 
-- console  
-- files  
-- logstash  
+- A custom logger function
+- A request interceptor
 
-it uses winston 3.x   
-Notice: to get logstash configuration working, you will need a ELK Stack, check the example folder.  
+Why using this module,
 
-# Installation
+- It allows to redirect the logs in **files**, on the **console** and/or in **logstash**.
+- It allows to collect the request content easily with filters.
+
+For more details (EN/FR) : [Wiki](https://github.com/studiowebux/webux-logger/wiki)
+
+## Installation
 
 ```bash
-npm i --save @studiowebux/logger
+npm install --save @studiowebux/logger
 ```
 
-# Usage
+[NPM](https://www.npmjs.com/package/@studiowebux/logger)
 
-```
+## Usage
+
+### Configuration
+
+#### Options
+
+| Key            | Value                                                                                                                                                    | Description                                                                                        |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| type           | (_Morgan_) - Possible choices : [**combined**, **tiny**, **dev**, **common**, **short**, **json**]                                                       | _The `format` options is only used when the type is set to `json`_                                 |
+| tokens         | (_Morgan_) - A list of tokens to collect information from.                                                                                               | If set to `null`, the default tokens will be used, <br />See below for the default values.         |
+| format         | (_Morgan_) - The keys to collect in the request.                                                                                                         | _only used when the type is set to `json`_                                                         |
+| application_id | (_Winston_) - An ID to simplify tthe sorting of the information.                                                                                         |                                                                                                    |
+| forceConsole   | (_Winston_) - A boolean to print the messages on the console even in production.                                                                         | By default, the console is deactivated in production mode.                                         |
+| consoleLevel   | (_Winston_) - It sets the log level to print on the console, <br />Possible choices : [**error**, **warn**, **info**, **verbose**, **debug**, **silly**] | If `silly` is chosen, all levels will be printed, but choosing `error` will only print the errors. |
+| logstash       | (_Winston_) - The logstash configuration.                                                                                                                | An ELK instance is required to use this option <br /> Only the UDP configuration is supported.     |
+| filenames      | (_Winston_) - A list of log level to be redirected in file.                                                                                              |                                                                                                    |
+| blacklist      | (_Winston_) - A list of values that will be replaced with '\*\*\*\*\*'                                                                                   | See the examples for more information                                                              |
+
+Available options:
+
+```javascript
 const options = {
+  type: "json", // combined, tiny, dev, common, short, json
+  tokens: null,
+  format: {
+    method: ":method",
+    url: ":url",
+    status: ":status",
+    body: ":body",
+    params: ":params",
+    query: ":query",
+    headers: ":headers",
+    "http-version": ":http-version",
+    "remote-ip": ":remote-addr",
+    "remote-user": ":remote-user",
+    length: ":res[content-length]",
+    referrer: ":referrer",
+    "user-agent": ":user-agent",
+    "accept-language": ":language",
+    "response-time": ":response-time ms",
+  },
   application_id: "Test01",
-  forceConsole: true,
-  consoleLevel: "silly",
+  forceConsole: false,
+  consoleLevel: "silly", // error, warn, info, verbose, debug, silly
   logstash: {
     host: "127.0.0.1",
-    port: "5000" // udp only !
+    port: "5000", // udp only !
   },
   filenames: {
     error: "log/error.log",
@@ -33,47 +75,179 @@ const options = {
     info: "log/info.log",
     verbose: "log/verbose.log",
     debug: "log/debug.log",
-    silly: "log/silly.log"
+    silly: "log/silly.log",
   },
-  blacklist: ["password"]
+  blacklist: ["password", "authorization", "accessToken", "refreshToken"],
 };
 ```
 
-Create a constant to define all the winston parameters.  
+### Default tokens:
 
-- application_id: specify which backend is sending the message.  
-- forceConsole: it force to get the logs output to the console even in production.  
-- consoleLevel: it set the level of message to show on the console.  
-- logstash: set both parameters to get a logstash redirection, remember, the port must be UDP. (to disable logstash, just delete the option)  
-- filenames: for each logging level, you can define a file.  
-- blacklist: this array contains the words to remove from the logs.  
-
-if you provide no options, only the console output will work and only in development mode.  
-
-## Example
-
+```javascript
+module.exports = [
+  {
+    name: "body",
+    needStringify: true,
+  },
+  {
+    name: "params",
+    needStringify: true,
+  },
+  {
+    name: "query",
+    needStringify: true,
+  },
+  {
+    name: "headers",
+    needStringify: true,
+  },
+  {
+    name: "type",
+    needStringify: false,
+    value: "content-type",
+    parent: "headers",
+  },
+  {
+    name: "language",
+    needStringify: false,
+    value: "accept-language",
+    parent: "headers",
+  },
+];
 ```
-const webuxlogger = require("@studiowebux/logger")(options);
 
-webuxlogger.error("An error occur");
-webuxlogger.info("An info occur");
-webuxlogger.debug("An debug occur");
-webuxlogger.warn({
-  message: "watch out ! this is a json !",
-  success: false,
-  status: 500
+## Functions
+
+### constructor(opts = {}, log = console)
+
+Initializes the configuration and the default logger.
+
+```javascript
+const WebuxLogger = require("@studiowebux/logger");
+
+const webuxLogger = new WebuxLogger(opts, console);
+```
+
+### CreateLogger(): Object
+
+It attaches the custom logger to the `log` variable.  
+It also returns the logger function.
+
+```javascript
+const log = webuxLogger.CreateLogger();
+```
+
+To use the custom logger function:
+
+> Both methods are equivalent
+
+```javascript
+log.info("...");
+log.error("...");
+log.warn("...");
+log.verbose("...");
+log.debug("...");
+log.silly("...");
+
+webuxLogger.log.info("...");
+webuxLogger.log.error("...");
+webuxLogger.log.warn("...");
+webuxLogger.log.verbose("...");
+webuxLogger.log.debug("...");
+webuxLogger.log.silly("...");
+```
+
+### OnRequest(): Function
+
+It configures the request interceptor.
+
+> this is required to have an Express instance to use the `app.use` function.
+
+```javascript
+const express = require("express");
+const app = express();
+
+const webuxLogger = new WebuxLogger(options, console);
+
+app.use(webuxLogger.OnRequest());
+```
+
+## Quick start
+
+> The `/examples` directory has multiple use cases.
+
+### The request interceptor with Morgan
+
+index.js
+
+```javascript
+const WebuxLogger = require("@studiowebux/logger");
+const express = require("express");
+const bodyParser = require("body-parser");
+const app = express();
+
+const options = {
+  type: "json",
+  format: {
+    method: ":method",
+    url: ":url",
+    status: ":status",
+    body: ":body",
+    params: ":params",
+    query: ":query",
+    headers: ":headers",
+    "http-version": ":http-version",
+    "remote-ip": ":remote-addr",
+    "remote-user": ":remote-user",
+    length: ":res[content-length]",
+    referrer: ":referrer",
+    "user-agent": ":user-agent",
+    "accept-language": ":language",
+    "response-time": ":response-time ms",
+  },
+};
+
+const webuxLogger = new WebuxLogger(options, console);
+
+app.use(webuxLogger.OnRequest());
+
+app.use(
+  bodyParser.json({
+    limit: "10MB",
+  })
+);
+
+app.get("/wait", (req, res) => {
+  setTimeout(() => {
+    res.status(200).json({ message: "it took 1.5 seconds ..." });
+  }, 1500);
 });
 
+app.use("*", (req, res) => {
+  res.send("BONJOUR !");
+});
+
+app.listen(1337, () => {
+  webuxLogger.log.info("Server is listening on port 1337");
+});
 ```
 
-Console Output:  
+- This configuration print the messages on the console without `winston`.
+- The requests are logged in `JSON` format without filters, that means that everything is logged (**this is unsecure to do that**).
 
+> (**Secure way**) Add filters provided by the custom logger (`CreateLogger()`).
+
+> \*\* To log the body content, you have to use the `body-parser` package.
+
+### ELK (Elastic, Logstash & Kibana)
+
+The `examples` directory has a Docker to start an ELK instance to do some tests.
+
+```bash
+docker-compose up -d
 ```
-{"message":"An error occur","level":"error","label":"Test01","timestamp":"2019-06-13T01:48:06.700Z"}
-{"message":"An info occur","level":"info","label":"Test01","timestamp":"2019-06-13T01:48:06.705Z"}
-{"message":"An debug occur","level":"debug","label":"Test01","timestamp":"2019-06-13T01:48:06.706Z"}
-{"message":"watch out ! this is a json !","success":false,"status":500,"level":"warn","label":"Test01","timestamp":"2019-06-13T01:48:06.706Z"}
-```
+
+## Videos and other resources
 
 ## Contributing
 
