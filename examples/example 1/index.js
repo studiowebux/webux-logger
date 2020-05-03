@@ -1,23 +1,23 @@
 const options = {
-    application_id: "Test01",
-    forceConsole: false,
-    consoleLevel: "silly",
-    logstash: {
-      host: "127.0.0.1",
-      port: "5000" // udp only !
-    },
-    filenames: {
-      error: "log/error.log",
-      warn: "log/warn.log",
-      info: "log/info.log",
-      verbose: "log/verbose.log",
-      debug: "log/debug.log",
-      silly: "log/silly.log"
-    },
-    blacklist: ["password", "authorization", "accessToken", "refreshToken"]
-  };
+  application_id: "Test01",
+  forceConsole: false,
+  consoleLevel: "silly",
+  logstash: {
+    host: "127.0.0.1",
+    port: "5000", // udp only !
+  },
+  filenames: {
+    error: "log/error.log",
+    warn: "log/warn.log",
+    info: "log/info.log",
+    verbose: "log/verbose.log",
+    debug: "log/debug.log",
+    silly: "log/silly.log",
+  },
+  blacklist: ["password", "authorization", "accessToken", "refreshToken"],
+};
 
-const webuxlogger = require("../../index")(options);
+const Webuxlogger = require("../../src/index");
 
 // const levels = {
 //   error: 0,
@@ -28,32 +28,36 @@ const webuxlogger = require("../../index")(options);
 //   silly: 5
 // };
 
-webuxlogger.error(`\x1b[33mAn error occur\x1b[0m` );
+const webuxLog = new Webuxlogger(options);
 
-webuxlogger.error("An error occur");
-webuxlogger.info("An info occur");
-webuxlogger.debug("A debug occur");
-webuxlogger.warn({
+const logger = webuxLog.CreateLogger();
+
+logger.error(`\x1b[33mAn error occured\x1b[0m`);
+
+logger.error("An error occured");
+logger.info("An info occured");
+logger.debug("A debug occured");
+logger.warn({
   message: "this is a json !",
   success: false,
-  status: 500
+  status: 500,
 });
-webuxlogger.silly("A silly message")
-webuxlogger.verbose("A verbose message")
+logger.silly("A silly message");
+logger.verbose("A verbose message");
 
-webuxlogger.info({
+logger.info({
   body: {
-    password: "JEanGUY",
-    user: "PAul",
-    email: "john@boby.com",
-    lastLogin: "2019-04-05"
+    password: "John",
+    user: "Doe",
+    email: "john@Doe.com",
+    lastLogin: "2019-04-05",
   },
   message: "bla bla bla",
   status: 201,
-  success: true
+  success: true,
 });
 
-webuxlogger.info({
+logger.info({
   message: "this message is required, Otherwise logstash won't take the entry",
   method: "GET",
   url: "/sitemap.xml",
@@ -66,13 +70,13 @@ webuxlogger.info({
     "accept-encoding": "gzip,deflate",
     from: "googlebot(at)googlebot.com",
     "if-modified-since": "Tue, 30 Sep 2019 11:34:56 GMT",
-    "x-forwarded-for": "1.2.3.4"
+    "x-forwarded-for": "1.2.3.4",
   },
   body: {
     password: "test123",
     user: {
-      password: "123Test"
+      password: "123Test",
     },
-    fullname: "Hey !"
-  }
+    fullname: "Hey !",
+  },
 });
