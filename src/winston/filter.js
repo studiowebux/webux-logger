@@ -60,7 +60,10 @@ const filterSecret = (blacklist) => {
 
     // If the message is a simple String
     // it is used mostly when the type is not equal to JSON
-    if (info.message) {
+    if (info && info.message) {
+      if (typeof info.message === "object") {
+        info.message = JSON.stringify(info.message);
+      }
       let isSecure = [];
       blacklist.forEach((item) => {
         if (info.message.includes(item)) {
