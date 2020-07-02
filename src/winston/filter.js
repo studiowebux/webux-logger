@@ -66,7 +66,10 @@ const filterSecret = (blacklist) => {
       }
       let isSecure = [];
       blacklist.forEach((item) => {
-        if (info.message.includes(item)) {
+        if (
+          info.message.typeof === "string" &&
+          info.message.includes(item)
+        ) {
           info.message.replace(item, "*****");
           isSecure.push(item);
         }
