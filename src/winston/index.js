@@ -12,12 +12,13 @@
  * License: All rights reserved Studio Webux S.E.N.C 2015-Present
  */
 
-"use strict";
+const { createLogger, format, transports } = require('winston');
 
-const { createLogger, format, transports } = require("winston");
-const { combine, timestamp, label, json, colorize } = format;
-const { LogstashTransport } = require("winston-logstash-transport");
-const { filterSecret } = require("./filter");
+const {
+  combine, timestamp, label, json, colorize,
+} = format;
+const { LogstashTransport } = require('winston-logstash-transport');
+const { filterSecret } = require('./filter');
 
 /**
  * Creates a custom logger with or without options.
@@ -26,16 +27,16 @@ const { filterSecret } = require("./filter");
  */
 module.exports = (options = {}) => {
   // Creates the logger
-  let logger = createLogger({
+  const logger = createLogger({
     defaultMeta: options.meta,
     format: combine(
       label({
-        label: options.application_id || "No label defined.",
+        label: options.application_id || 'No label defined.',
       }),
       filterSecret(options.blacklist)(),
       timestamp(),
       json(),
-      colorize()
+      colorize(),
     ),
   });
 
@@ -45,14 +46,14 @@ module.exports = (options = {}) => {
   if (options.filenames) {
     Object.keys(options.filenames).forEach((level) => {
       if (!options.filenames[level]) {
-        throw new Error("Invalid file provided");
+        throw new Error('Invalid file provided');
       }
 
       logger.add(
         new transports.File({
-          level: level,
+          level,
           filename: options.filenames[level],
-        })
+        }),
       );
     });
   }
@@ -63,18 +64,18 @@ module.exports = (options = {}) => {
       new LogstashTransport({
         host: options.logstash.host,
         port: options.logstash.port,
-      })
+      }),
     );
   }
 
   // Adds console redirection,
   // If not in 'production' or 'forced' to print.
-  if (options.forceConsole === true || process.env.NODE_ENV != "production") {
+  if (options.forceConsole === true || process.env.NODE_ENV !== 'production') {
     logger.add(
       new transports.Console({
-        level: options.consoleLevel || "silly",
+        level: options.consoleLevel || 'silly',
         format: format.simple(),
-      })
+      }),
     );
   }
 
@@ -83,12 +84,12 @@ module.exports = (options = {}) => {
     write: (message) => {
       // This message is required to work with logstash
       // Otherwise the entry is ignored.
-      let object = {
-        message: "Logging using stream function",
+      const object = {
+        message: 'Logging using stream function',
       };
 
       try {
-        let cleaned = JSON.parse(message);
+        const cleaned = JSON.parse(message);
         cleaned.body = JSON.parse(message).body
           ? JSON.parse(JSON.parse(message).body)
           : {};
@@ -101,7 +102,7 @@ module.exports = (options = {}) => {
         cleaned.query = JSON.parse(message).query
           ? JSON.parse(JSON.parse(message).query)
           : {};
-        cleaned.url = JSON.parse(message).url ? JSON.parse(message).url : "";
+        cleaned.url = JSON.parse(message).url ? JSON.parse(message).url : '';
 
         logger.info({ ...object, ...cleaned });
       } catch (e) {

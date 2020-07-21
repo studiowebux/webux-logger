@@ -5,37 +5,35 @@
  * License: All rights reserved Studio Webux S.E.N.C 2015-Present
  */
 
-"use strict";
-
 // The default tokens used with the request interceptor
 // it can be modified using the 'tokens' options.
 module.exports = [
   {
-    name: "body",
+    name: 'body',
     needStringify: true,
   },
   {
-    name: "params",
+    name: 'params',
     needStringify: true,
   },
   {
-    name: "query",
+    name: 'query',
     needStringify: true,
   },
   {
-    name: "headers",
+    name: 'headers',
     needStringify: true,
   },
   {
-    name: "type",
+    name: 'type',
     needStringify: false,
-    value: "content-type",
-    parent: "headers",
+    value: 'content-type',
+    parent: 'headers',
   },
   {
-    name: "language",
+    name: 'language',
     needStringify: false,
-    value: "accept-language",
-    parent: "headers",
+    value: 'accept-language',
+    parent: 'headers',
   },
 ];
